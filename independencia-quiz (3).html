@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Independencia Argentina · 1816</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Spectral:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parchment:#ece2c8; --parchment-dark:#ddcda3; --ink:#241a10; --ink-soft:#4a3826;
+    --navy:#1c2b4a; --navy-deep:#101a30; --gold:#b8893f; --gold-bright:#e0ac52;
+    --wax:#8a2f2f; --wax-bright:#b23c3c; --good:#2f6e4f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh; font-family:'Spectral',serif; color:var(--ink);
+    background: radial-gradient(ellipse at 20% -10%, rgba(184,137,63,.25), transparent 55%),
+                radial-gradient(ellipse at 90% 110%, rgba(28,43,74,.35), transparent 50%),
+                var(--navy-deep);
+    display:flex; align-items:flex-start; justify-content:center;
+    padding:40px 16px 80px;
+  }
+  .stage{width:100%; max-width:640px;}
+  .hero{text-align:center; color:var(--parchment); padding:6px 6px 28px; animation:dropIn .8s ease both;}
+  @keyframes dropIn{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+  .eyebrow{font-family:'JetBrains Mono',monospace; letter-spacing:.3em; font-size:11px; text-transform:uppercase; color:var(--gold-bright); margin-bottom:8px;}
+  .hero h1{font-family:'Cormorant Garamond',serif; font-weight:700; font-size:clamp(34px,8vw,54px); line-height:1.05; margin:0 0 8px;}
+  .hero h1 em{font-style:italic; color:var(--gold-bright);}
+  .hero .sub{font-family:'Spectral',serif; font-style:italic; font-size:15px; color:#cfc6b3; max-width:440px; margin:0 auto;}
+
+  .card{
+    background:linear-gradient(160deg,var(--parchment) 0%,var(--parchment-dark) 100%);
+    border-radius:6px; box-shadow:0 30px 60px -20px rgba(20,14,6,.35);
+    padding:34px 30px 28px; position:relative; animation:riseIn .8s .1s ease both;
+  }
+  @keyframes riseIn{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+  .card::before{content:"";position:absolute;inset:9px;border:1px solid rgba(36,26,16,.18);border-radius:3px;pointer-events:none;}
+
+  .tag{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.15em; color:var(--wax); text-transform:uppercase; display:block; margin-bottom:10px;}
+  p.body-text{font-size:16px; line-height:1.65; color:var(--ink-soft); margin:0 0 20px;}
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+    background:var(--wax); color:#fdf6e8; border:none; padding:15px 26px; border-radius:8px; cursor:pointer;
+    box-shadow:0 12px 24px -10px rgba(138,47,47,.6); transition:transform .15s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn:disabled{opacity:.5; cursor:not-allowed; transform:none;}
+
+  .waiting{display:flex; align-items:center; gap:12px; color:var(--ink-soft); font-size:14px;}
+  .dot-pulse{width:9px;height:9px;border-radius:50%; background:var(--gold); animation:pulse 1.2s infinite ease-in-out;}
+  @keyframes pulse{0%,100%{opacity:.3;transform:scale(.8);}50%{opacity:1;transform:scale(1.15);}}
+
+  .intro-anim{animation:fadeSlide .6s ease both;}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+  .q-text{font-family:'Cormorant Garamond',serif; font-weight:600; font-size:clamp(20px,3.4vw,25px); line-height:1.28; margin:0 0 20px;}
+  .options{display:flex; flex-direction:column; gap:10px;}
+  .opt{
+    text-align:left; background:rgba(255,252,242,.55); border:1.5px solid rgba(36,26,16,.18);
+    border-radius:8px; padding:14px 16px; font-family:'Spectral',serif; font-size:16px; color:var(--ink);
+    cursor:pointer; display:flex; align-items:center; gap:12px; transition:all .15s ease;
+  }
+  .opt:hover:not(:disabled){border-color:var(--gold); background:rgba(255,252,242,.85); transform:translateX(3px);}
+  .opt:disabled{cursor:default;}
+  .opt.selected{border-color:var(--navy); background:rgba(28,43,74,.12);}
+  .opt .letter{font-family:'JetBrains Mono',monospace; font-size:12px; width:22px;height:22px;border-radius:50%;
+    border:1.5px solid rgba(36,26,16,.3); display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--ink-soft);}
+  .opt.selected .letter{background:var(--navy); border-color:var(--navy); color:#fff;}
+
+  .score-big{font-family:'Cormorant Garamond',serif; font-weight:700; font-size:clamp(60px,14vw,92px); line-height:1; color:var(--navy); margin:4px 0 0; text-align:center;}
+  .score-of{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--ink-soft); letter-spacing:.1em; text-align:center; display:block; margin-bottom:18px;}
+  .review-item{font-size:13px; padding:11px 13px; border-radius:6px; margin-bottom:8px; background:rgba(255,252,242,.5);}
+  .review-item .qline{color:var(--ink); margin-bottom:4px;}
+  .review-item .aline{font-family:'JetBrains Mono',monospace; font-size:11px;}
+  .ok{color:var(--good);} .bad{color:var(--wax-bright);}
+
+  footer.tag2{text-align:center; margin-top:24px; color:#8b8168; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.2em; text-transform:uppercase;}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="hero">
+    <div class="eyebrow" id="hero-eyebrow">9 de Julio de 1816 · Congreso de Tucumán</div>
+    <h1><span id="hero-line1">Independencia</span><br><em id="hero-line2">Argentina 1816</em></h1>
+    <p class="sub" id="hero-sub">De las invasiones inglesas al Acta firmada en Tucumán: un proceso, no un solo día.</p>
+  </div>
+  <div class="card" id="card">
+    <p class="body-text">Conectando…</p>
+  </div>
+  <footer class="tag2" id="footer-text">Provincias Unidas en Sud-América</footer>
+</div>
+
+<!-- ============ FIREBASE ============ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBJ5QyiT9RyxKq2wtxP-WUnSo0US8bR7To",
+  authDomain: "independencia-1816.firebaseapp.com",
+  databaseURL: "https://independencia-1816-default-rtdb.firebaseio.com",
+  projectId: "independencia-1816",
+  storageBucket: "independencia-1816.firebasestorage.app",
+  messagingSenderId: "158213747062",
+  appId: "1:158213747062:web:3274f98cb5729530b68a57"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
+
+<script>
+/* ===================== DEFAULT CONTENT (8 rondas x 2 preguntas) ===================== */
+/* El administrador puede sobreescribir todo esto desde su panel. Esto es solo el respaldo
+   inicial que se sube a Firebase la primera vez que el admin abre su panel. */
+const DEFAULT_ROUNDS = [
+{intro:"Antes de 1810, el territorio que hoy es Argentina formaba parte del Virreinato del Río de la Plata, gobernado en nombre del rey de España.",
+ questions:[
+  {text:"¿Qué territorio existía antes de 1810 en la región que hoy es Argentina?",opts:[
+    {t:"La República Argentina",c:false},{t:"El Virreinato del Río de la Plata",c:true},
+    {t:"La Confederación del Plata",c:false},{t:"El Reino de Buenos Aires",c:false}]},
+  {text:"¿Qué demostraron las invasiones inglesas de 1806 y 1807?",opts:[
+    {t:"Que España enviaría siempre tropas a tiempo",c:false},
+    {t:"Que los habitantes de Buenos Aires podían organizarse militarmente por sus propios medios",c:true},
+    {t:"Que Inglaterra dominaría el Río de la Plata",c:false},{t:"Que Fernando VII apoyaba a los criollos",c:false}]}
+ ]},
+{intro:"En 1808 Napoleón intervino en España y Fernando VII quedó cautivo, abriendo una crisis de autoridad que también se sintió en América.",
+ questions:[
+  {text:"¿Qué ocurrió en España en 1808 y por qué fue clave?",opts:[
+    {t:"Fernando VII declaró la independencia americana",c:false},
+    {t:"Napoleón intervino y Fernando VII quedó cautivo, generando una crisis de autoridad",c:true},
+    {t:"España le vendió el virreinato a Francia",c:false},{t:"Se abolió la monarquía española",c:false}]},
+  {text:"¿Qué se discutió en el Cabildo Abierto del 22 de mayo de 1810?",opts:[
+    {t:"La redacción del Himno Nacional",c:false},{t:"Si el virrey Cisneros debía continuar gobernando",c:true},
+    {t:"La abolición de la esclavitud",c:false},{t:"El nombre del nuevo país",c:false}]}
+ ]},
+{intro:"El 25 de mayo de 1810 se formó la Primera Junta, marcando el comienzo de un proceso de autogobierno que aún no era independencia formal.",
+ questions:[
+  {text:"¿Quién presidió la Primera Junta, formada el 25 de mayo de 1810?",opts:[
+    {t:"Mariano Moreno",c:false},{t:"Manuel Belgrano",c:false},{t:"Cornelio Saavedra",c:true},{t:"Juan José Paso",c:false}]},
+  {text:"¿La Revolución de Mayo declaró formalmente la independencia?",opts:[
+    {t:"Sí, el 25 de mayo de 1810 se declaró la independencia",c:false},
+    {t:"No, en 1810 comenzó un proceso de autogobierno que culminó recién en 1816",c:true},
+    {t:"Sí, pero solo de forma provisional durante un año",c:false},{t:"No, la independencia se declaró en 1806",c:false}]}
+ ]},
+{intro:"Entre 1810 y 1816 hubo guerra y discusión política en simultáneo, mientras San Martín preparaba su plan continental.",
+ questions:[
+  {text:"¿Qué fue la Asamblea del Año XIII (1813)?",opts:[
+    {t:"El Congreso que declaró la independencia",c:false},
+    {t:"Una asamblea que avanzó medidas de gobierno pero no declaró la independencia",c:true},
+    {t:"El tratado de paz con España",c:false},{t:"La primera Constitución argentina",c:false}]},
+  {text:"¿Cuál fue la estrategia continental de José de San Martín?",opts:[
+    {t:"Avanzar directamente por el Alto Perú",c:false},
+    {t:"Cruzar los Andes desde Mendoza, liberar Chile y atacar Perú por mar",c:true},
+    {t:"Pedir ayuda militar a Inglaterra",c:false},{t:"Negociar la paz directamente con Fernando VII",c:false}]}
+ ]},
+{intro:"Manuel Belgrano venció en Tucumán y Salta, pero la derrota de Sipe-Sipe en 1815 dejó al Alto Perú en manos realistas.",
+ questions:[
+  {text:"¿Quién comandó las victorias de Tucumán (1812) y Salta (1813)?",opts:[
+    {t:"José de San Martín",c:false},{t:"Martín Miguel de Güemes",c:false},{t:"Manuel Belgrano",c:true},{t:"Cornelio Saavedra",c:false}]},
+  {text:"¿Qué derrota de 1815 dejó al Alto Perú bajo control realista?",opts:[
+    {t:"Vilcapugio",c:false},{t:"Ayohuma",c:false},{t:"Sipe-Sipe",c:true},{t:"Salta",c:false}]}
+ ]},
+{intro:"Güemes defendió el norte con sus gauchos, mientras que varias provincias, vinculadas a Artigas, no participaron del Congreso de Tucumán.",
+ questions:[
+  {text:"¿Qué papel cumplió Martín Miguel de Güemes?",opts:[
+    {t:"Presidió el Congreso de Tucumán",c:false},
+    {t:"Defendió la frontera norte con sus gauchos frente a los realistas",c:true},
+    {t:"Cruzó los Andes junto a San Martín",c:false},{t:"Redactó el Acta de Independencia",c:false}]},
+  {text:"¿Participaron todas las provincias actuales de Argentina en el Congreso de Tucumán?",opts:[
+    {t:"Sí, todas sin excepción",c:false},
+    {t:"No: las provincias de la Liga de los Pueblos Libres no participaron",c:true},
+    {t:"No participó ninguna provincia del interior",c:false},{t:"Solo participó Buenos Aires",c:false}]}
+ ]},
+{intro:"Narciso Laprida presidió el Congreso el 9 de julio de 1816, y Belgrano propuso, sin ser diputado, una llamativa forma de gobierno.",
+ questions:[
+  {text:"¿Quién presidía el Congreso el día de la declaración de independencia?",opts:[
+    {t:"Juan Martín de Pueyrredón",c:false},{t:"Manuel Belgrano",c:false},{t:"Narciso Laprida",c:true},{t:"Juan José Paso",c:false}]},
+  {text:"¿Qué propuso Manuel Belgrano ante el Congreso, aunque no era diputado?",opts:[
+    {t:"Una monarquía constitucional con un descendiente de los incas",c:true},
+    {t:"La abolición inmediata de la esclavitud",c:false},
+    {t:"Una alianza militar con Estados Unidos",c:false},{t:"El traslado inmediato del Congreso a Buenos Aires",c:false}]}
+ ]},
+{intro:"El 9 de julio de 1816 se declaró la independencia de las 'Provincias Unidas en Sud-América', y días después se sumó una frase clave al acta.",
+ questions:[
+  {text:"¿Cómo se llamó oficialmente la nación declarada independiente en 1816?",opts:[
+    {t:"República Argentina",c:false},{t:"Provincias Unidas en Sud-América",c:true},
+    {t:"Confederación Argentina",c:false},{t:"Virreinato Independiente del Plata",c:false}]},
+  {text:"¿Qué frase se agregó al acta días después de la declaración original?",opts:[
+    {t:"'y de toda otra dominación extranjera'",c:true},{t:"'bajo la protección de Inglaterra'",c:false},
+    {t:"'con capital en Tucumán'",c:false},{t:"'en unión con Chile y Perú'",c:false}]}
+ ]}
+];
+
+/* ===================== DEVICE DETECTION ===================== */
+function legacyDetect(){
+  const ua = navigator.userAgent || '';
+  let os = 'Dispositivo desconocido';
+  if(/iPhone/i.test(ua)) os = 'iPhone';
+  else if(/iPad/i.test(ua)) os = 'iPad';
+  else if(/Android/i.test(ua)){
+    const m = ua.match(/Android[^;]*;\s*([^)]+)\)/i);
+    let raw = m && m[1] ? m[1].split('Build')[0].trim() : 'Android';
+    os = (raw === 'K' || raw.length < 2) ? 'Android' : raw;
+  }
+  else if(/Macintosh/i.test(ua)) os = 'Mac';
+  else if(/Windows/i.test(ua)) os = 'Windows PC';
+  else if(/Linux/i.test(ua)) os = 'Linux';
+
+  let browser = 'Navegador';
+  if(/Edg\//i.test(ua)) browser = 'Edge';
+  else if(/OPR\//i.test(ua)) browser = 'Opera';
+  else if(/Chrome\//i.test(ua) && !/Chromium/i.test(ua)) browser = 'Chrome';
+  else if(/CriOS/i.test(ua)) browser = 'Chrome iOS';
+  else if(/FxiOS/i.test(ua)) browser = 'Firefox iOS';
+  else if(/Firefox\//i.test(ua)) browser = 'Firefox';
+  else if(/Safari\//i.test(ua)) browser = 'Safari';
+
+  return os + ' · ' + browser;
+}
+
+async function detectDevice(){
+  try{
+    if(navigator.userAgentData && navigator.userAgentData.getHighEntropyValues){
+      const hints = await navigator.userAgentData.getHighEntropyValues(['model','platform','platformVersion']);
+      const model = (hints.model || '').trim();
+      const platform = (hints.platform || '').trim();
+      if(model && model.length > 1){
+        return model + (platform ? ' · '+platform : '');
+      }
+      if(platform){
+        return legacyDetect().split(' · ')[1] ? platform + ' · ' + legacyDetect().split(' · ')[1] : platform;
+      }
+    }
+  }catch(e){ /* sigue al fallback */ }
+  return legacyDetect();
+}
+
+/* ===================== STATE ===================== */
+const userId = 'u' + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+let deviceLabel = 'Detectando dispositivo…';
+let joined = false;
+let record = {id:userId, device:deviceLabel, answers:[]}; // answers: [{round,qIndex,text,sel,correct}]
+let rounds = DEFAULT_ROUNDS; // se sobreescribe con lo que haya en Firebase
+let currentShuffled = null;
+let lastKey = '';
+
+const card = document.getElementById('card');
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function saveRecord(){
+  db.ref('users/'+userId).set(record).catch(e=>console.error(e));
+}
+
+/* ===================== TEXTOS GENERALES (editables desde el admin) ===================== */
+const DEFAULT_UI = {
+  heroEyebrow: "9 de Julio de 1816 · Congreso de Tucumán",
+  heroLine1: "Independencia",
+  heroLine2: "Argentina 1816",
+  heroSub: "De las invasiones inglesas al Acta firmada en Tucumán: un proceso, no un solo día.",
+  lobbyTag: "Antes de empezar",
+  lobbyText: "Este es un quiz en vivo sobre el proceso de la independencia argentina, del Virreinato del Río de la Plata al Acta firmada en Tucumán el 9 de julio de 1816. Vas a responder 8 rondas de 2 preguntas, guiado por quien presenta la exposición.",
+  joinBtn: "Iniciar quiz",
+  waitingStart: "Esperando a que el administrador inicie el quiz…",
+  footerText: "Provincias Unidas en Sud-América",
+  finalExtra: ""
+};
+let ui = DEFAULT_UI;
+db.ref('uitext').on('value', (snap)=>{
+  const v = snap.val();
+  ui = v ? Object.assign({}, DEFAULT_UI, v) : DEFAULT_UI;
+  document.getElementById('hero-eyebrow').textContent = ui.heroEyebrow;
+  document.getElementById('hero-line1').textContent = ui.heroLine1;
+  document.getElementById('hero-line2').textContent = ui.heroLine2;
+  document.getElementById('hero-sub').textContent = ui.heroSub;
+  document.getElementById('footer-text').textContent = ui.footerText;
+  if(!joined) renderLobby();
+});
+
+/* ===================== SCREENS ===================== */
+function renderLobby(){
+  card.innerHTML = `
+    <span class="tag">${ui.lobbyTag}</span>
+    <p class="body-text">${ui.lobbyText}</p>
+    <button class="btn" id="join-btn">${ui.joinBtn}</button>
+  `;
+  document.getElementById('join-btn').addEventListener('click', async ()=>{
+    const btn = document.getElementById('join-btn');
+    btn.disabled = true;
+    deviceLabel = await detectDevice();
+    record.device = deviceLabel;
+    joined = true;
+    saveRecord();
+    renderWaiting(ui.waitingStart);
+  });
+}
+
+function renderWaiting(msg){
+  card.innerHTML = `
+    <span class="tag">En espera</span>
+    <div class="waiting"><div class="dot-pulse"></div><span>${msg}</span></div>
+  `;
+}
+
+function renderIntro(round){
+  const r = rounds[round-1];
+  card.innerHTML = `
+    <div class="intro-anim">
+      <span class="tag">Ronda ${round} de ${rounds.length} · Introducción</span>
+      <p class="body-text">${(r && r.intro) || 'La exposición está por comenzar…'}</p>
+      <div class="waiting"><div class="dot-pulse"></div><span>Esperando la primera pregunta…</span></div>
+    </div>
+  `;
+}
+
+function renderQuestion(state){
+  const r = rounds[state.round-1];
+  const item = r.questions[state.qIndex];
+  const key = 'r'+state.round+'-'+state.qIndex;
+  const already = record.answers.find(a=>a.round===state.round && a.qIndex===state.qIndex);
+
+  if(key !== lastKey){
+    currentShuffled = shuffle(item.opts);
+    lastKey = key;
+  }
+  const letters = ['A','B','C','D'];
+
+  if(already){
+    card.innerHTML = `
+      <span class="tag">Ronda ${state.round} de ${rounds.length} · Pregunta ${state.qIndex+1} de 2</span>
+      <p class="q-text">${item.text}</p>
+      <div class="waiting"><div class="dot-pulse"></div><span>Respuesta guardada. Esperando…</span></div>
+    `;
+    return;
+  }
+
+  card.innerHTML = `
+    <span class="tag">Ronda ${state.round} de ${rounds.length} · Pregunta ${state.qIndex+1} de 2</span>
+    <p class="q-text">${item.text}</p>
+    <div class="options" id="opts"></div>
+  `;
+  const wrap = document.getElementById('opts');
+  currentShuffled.forEach((opt, idx)=>{
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = '<span class="letter">'+letters[idx]+'</span><span>'+opt.t+'</span>';
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('#opts .opt').forEach(o=>o.disabled=true);
+      btn.classList.add('selected');
+      record.answers.push({round:state.round, qIndex:state.qIndex, text:item.text, sel:opt.t, correct:opt.c});
+      saveRecord();
+      renderWaiting('Respuesta guardada. Esperando la siguiente pregunta…');
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+function renderFinal(){
+  const all = record.answers;
+  const correctCount = all.filter(a=>a.correct).length;
+  const total = all.length || 16;
+  const scoreTen = Math.round((correctCount/total)*10*10)/10;
+  let rows = '';
+  all.forEach((a,i)=>{
+    rows += '<div class="review-item"><div class="qline">'+(i+1)+'. '+a.text+'</div><div class="aline '+(a.correct?'ok':'bad')+'">'+(a.correct?'✓ Correcta':'✗ Incorrecta')+' — tu respuesta: '+a.sel+'</div></div>';
+  });
+  card.innerHTML = `
+    <span class="tag">Resultado final</span>
+    <div class="score-big">${scoreTen}</div>
+    <div class="score-of">SOBRE 10 · ${correctCount} DE ${total} CORRECTAS</div>
+    <div>${rows}</div>
+    ${ui.finalExtra ? '<p class="body-text" style="margin-top:20px;">'+ui.finalExtra+'</p>' : ''}
+    <p style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.15em; text-transform:uppercase; color:#8b8168; margin-top:26px;">Creado por Juan Pablo Borel</p>
+  `;
+}
+
+/* ===================== REALTIME LISTENERS ===================== */
+db.ref('quizdata').on('value', (snap)=>{
+  const val = snap.val();
+  if(val && val.rounds && val.rounds.length){ rounds = val.rounds; }
+});
+
+db.ref('quizstate').on('value', (snap)=>{
+  if(!joined) return;
+  const state = snap.val() || {phase:'lobby'};
+  if(state.phase === 'lobby'){
+    renderWaiting('Esperando a que el administrador inicie el quiz…');
+  } else if(state.phase === 'intro'){
+    renderIntro(state.round);
+  } else if(state.phase === 'question'){
+    renderQuestion(state);
+  } else if(state.phase === 'finished'){
+    renderFinal();
+  }
+});
+
+renderLobby();
+</script>
+</body>
+</html>
