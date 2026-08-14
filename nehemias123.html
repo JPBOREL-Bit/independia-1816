@@ -423,6 +423,7 @@ function renderControlPanel(){
       <h2>Quiz finalizado</h2>
       <p style="color:var(--text-dim); font-size:14px;">Todos los participantes ya pueden ver su resultado final.</p>
       <button class="btn btn-danger" id="reset-btn">Reiniciar todo</button>
+      <div id="ranking-wrap"></div>
     `;
     document.getElementById('reset-btn').addEventListener('click', ()=>{
       if(!confirm('Esto borra participantes y respuestas. ¿Continuar?')) return;
@@ -430,7 +431,35 @@ function renderControlPanel(){
       participants = {};
       setState({phase:'lobby', round:1, qIndex:0});
     });
+    renderRanking();
   }
+}
+
+function renderRanking(){
+  const wrap = document.getElementById('ranking-wrap');
+  if(!wrap) return;
+  const ids = Object.keys(participants);
+  if(ids.length === 0){
+    wrap.innerHTML = '<p class="empty" style="margin-top:14px;">No hay participantes.</p>';
+    return;
+  }
+  const list = ids.map(id=>{
+    const p = participants[id];
+    const answers = p.answers || [];
+    const correct = answers.filter(a=>a.correct).length;
+    const scoreTen = Math.round((correct/16)*10*10)/10;
+    return {device: p.device || 'Dispositivo desconocido', correct, scoreTen, answered: answers.length};
+  });
+  list.sort((a,b)=> b.scoreTen - a.scoreTen);
+
+  let rows = '';
+  list.forEach((r, i)=>{
+    rows += '<div class="participant">'
+      + '<div class="pinfo"><span class="lbl2" style="margin:0; width:22px; flex-shrink:0;">#'+(i+1)+'</span><span class="pname">'+r.device+'</span></div>'
+      + '<span class="badge">'+r.scoreTen+'/10 · '+r.correct+'/16</span>'
+      + '</div>';
+  });
+  wrap.innerHTML = '<h2 style="margin-top:18px;">Ranking final</h2>'+rows;
 }
 
 function renderQuestionControl(){
