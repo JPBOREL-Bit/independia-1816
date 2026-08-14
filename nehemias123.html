@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Admin · Independencia 1816</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700&family=Spectral:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c1220; --panel:#141d31; --panel-2:#1b2740; --line:rgba(224,172,82,.16);
+    --gold:#e0ac52; --gold-dim:#b8893f; --text:#e9e4d6; --text-dim:#9aa3b8;
+    --good:#3f9d6f; --bad:#c85757; --wax:#8a2f2f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh; background:
+      radial-gradient(ellipse at 15% 0%, rgba(224,172,82,.08), transparent 45%),
+      radial-gradient(ellipse at 85% 100%, rgba(63,157,111,.06), transparent 45%),
+      var(--bg);
+    font-family:'Spectral',serif; color:var(--text); padding:28px 16px 70px;
+  }
+  .wrap{max-width:920px; margin:0 auto;}
+  header{display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:16px; border-bottom:1px solid var(--line); padding-bottom:16px;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.3em; text-transform:uppercase; color:var(--gold);}
+  h1{font-family:'Cormorant Garamond',serif; font-weight:700; font-size:30px; margin:4px 0 0;}
+  .phase-pill{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    background:var(--panel-2); border:1px solid var(--line); color:var(--gold); padding:7px 14px; border-radius:99px;
+  }
+  .header-actions{display:flex; align-items:center; gap:10px; margin-bottom:22px;}
+  .btn-reset-global{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.1em; text-transform:uppercase;
+    background:transparent; color:var(--bad); border:1px solid rgba(200,87,87,.45); padding:9px 16px; border-radius:7px; cursor:pointer;
+  }
+  .btn-reset-global:hover{background:rgba(200,87,87,.12);}
+
+  .tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .tab-btn{
+    font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
+    background:var(--panel-2); color:var(--text-dim); border:1px solid var(--line); padding:9px 16px; border-radius:7px; cursor:pointer;
+  }
+  .tab-btn.active{background:var(--gold); color:#1c1305; border-color:var(--gold);}
+
+  .grid{display:grid; grid-template-columns:1.3fr .9fr; gap:18px;}
+  @media (max-width:760px){.grid{grid-template-columns:1fr;}}
+
+  .panel{background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:22px; margin-bottom:18px;}
+  .panel h2{font-family:'Cormorant Garamond',serif; font-weight:700; font-size:20px; margin:0 0 14px; color:var(--gold);}
+  .lbl{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); display:block; margin-bottom:6px; margin-top:14px;}
+  textarea, input[type=text]{
+    width:100%; font-family:'Spectral',serif; font-size:14.5px; line-height:1.5;
+    background:var(--panel-2); border:1px solid var(--line); border-radius:8px; color:var(--text);
+    padding:11px 13px; resize:vertical;
+  }
+  textarea{min-height:70px;}
+  textarea:focus, input:focus{outline:none; border-color:var(--gold);}
+
+  .opt-edit{display:flex; align-items:center; gap:8px; margin-top:8px;}
+  .opt-edit input[type=text]{flex:1;}
+  .opt-edit input[type=radio]{accent-color: var(--good); width:16px; height:16px; flex-shrink:0;}
+  .opt-edit .radio-lbl{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--text-dim); white-space:nowrap;}
+
+  .btn{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; letter-spacing:.12em; text-transform:uppercase;
+    background:var(--gold); color:#1c1305; border:none; padding:13px 22px; border-radius:7px; cursor:pointer;
+    transition:transform .15s ease, filter .15s ease; margin-right:10px; margin-top:14px;
+  }
+  .btn:hover{transform:translateY(-2px); filter:brightness(1.08);}
+  .btn-danger{background:transparent; color:var(--bad); border:1px solid rgba(200,87,87,.4);}
+  .btn-small{padding:6px 12px; font-size:10.5px; margin-top:0;}
+
+  .round-nav{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px;}
+  .round-nav button{
+    font-family:'JetBrains Mono',monospace; font-size:11px; width:34px; height:34px; border-radius:6px;
+    background:var(--panel-2); border:1px solid var(--line); color:var(--text-dim); cursor:pointer;
+  }
+  .round-nav button.active{background:var(--gold); color:#1c1305; border-color:var(--gold);}
+
+  .stat-row{display:flex; gap:18px; flex-wrap:wrap; margin-bottom:6px;}
+  .stat{font-family:'JetBrains Mono',monospace;}
+  .stat .num{font-family:'Cormorant Garamond',serif; font-weight:700; font-size:30px; color:var(--gold); display:block;}
+  .stat .lbl2{font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim);}
+
+  .participant{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+  .participant:last-child{border-bottom:none;}
+  .participant .pinfo{display:flex; align-items:center; gap:8px; flex:1; min-width:0;}
+  .participant .pname{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .badge{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.08em; padding:3px 8px; border-radius:99px; background:rgba(63,157,111,.15); color:var(--good); flex-shrink:0;}
+  .kick-btn{
+    font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:.06em; text-transform:uppercase;
+    background:transparent; color:var(--bad); border:1px solid rgba(200,87,87,.4); padding:5px 9px; border-radius:6px; cursor:pointer; flex-shrink:0;
+  }
+  .kick-btn:hover{background:rgba(200,87,87,.15);}
+
+  .q-preview{font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:600; margin:0 0 10px; color:var(--text);}
+  .opt-row{display:flex; align-items:center; justify-content:space-between; padding:8px 10px; background:var(--panel-2); border-radius:6px; margin-bottom:6px; font-size:13.5px;}
+  .opt-row.correct{border:1px solid rgba(63,157,111,.4);}
+  .opt-count{font-family:'JetBrains Mono',monospace; color:var(--gold);}
+
+  .empty{color:var(--text-dim); font-size:13.5px; font-style:italic;}
+  .link-note{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); letter-spacing:.05em; margin-top:8px;}
+  .saved-note{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--good); margin-left:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Panel privado · No compartir este enlace</div>
+      <h1>Control — Independencia 1816</h1>
+    </div>
+    <div class="phase-pill" id="phase-pill">CARGANDO…</div>
+  </header>
+
+  <div class="header-actions">
+    <button class="btn-reset-global" id="global-reset-btn">↺ Reiniciar Quiz</button>
+    <span class="link-note" id="global-reset-note" style="display:none; color:var(--good);">Reiniciado ✓</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-live" data-tab="live">En vivo</button>
+    <button class="tab-btn" id="tab-edit" data-tab="edit">Preguntas por ronda</button>
+    <button class="tab-btn" id="tab-ui" data-tab="ui">Textos generales</button>
+  </div>
+
+  <div id="view-live">
+    <div class="grid">
+      <div>
+        <div class="panel" id="control-panel"></div>
+        <div class="panel" id="question-panel" style="display:none;"></div>
+      </div>
+      <div class="panel" id="participants-panel"></div>
+    </div>
+  </div>
+
+  <div id="view-edit" style="display:none;">
+    <div class="panel">
+      <h2>Editar contenido — 8 rondas · 2 preguntas cada una</h2>
+      <div class="round-nav" id="round-nav"></div>
+      <div id="round-editor"></div>
+      <button class="btn" id="save-round">Guardar ronda</button>
+      <span class="saved-note" id="saved-note" style="display:none;">Guardado ✓</span>
+    </div>
+  </div>
+
+  <div id="view-ui" style="display:none;">
+    <div class="panel" id="ui-editor"></div>
+  </div>
+</div>
+
+<!-- ============ FIREBASE ============ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBJ5QyiT9RyxKq2wtxP-WUnSo0US8bR7To",
+  authDomain: "independencia-1816.firebaseapp.com",
+  databaseURL: "https://independencia-1816-default-rtdb.firebaseio.com",
+  projectId: "independencia-1816",
+  storageBucket: "independencia-1816.firebasestorage.app",
+  messagingSenderId: "158213747062",
+  appId: "1:158213747062:web:3274f98cb5729530b68a57"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+</script>
+
+<script>
+const DEFAULT_ROUNDS = [
+{intro:"Antes de la independencia, gran parte del territorio que hoy conocemos como Argentina formaba parte del Virreinato del Río de la Plata, creado en 1776 y perteneciente a la monarquía española. La máxima autoridad era el virrey, que gobernaba en nombre del rey de España. La sociedad colonial tenía importantes desigualdades y los criollos tenían menos posibilidades de acceder a los principales cargos políticos.",
+ questions:[
+  {text:"¿A qué entidad pertenecía gran parte del territorio antes de la independencia?",opts:[
+    {t:"Imperio portugués",c:false},{t:"Virreinato del Río de la Plata",c:true},
+    {t:"Reino Unido",c:false},{t:"Francia",c:false}]},
+  {text:"¿Quién era la máxima autoridad del Virreinato?",opts:[
+    {t:"El presidente",c:false},{t:"El gobernador de Buenos Aires",c:false},
+    {t:"El virrey",c:true},{t:"El Congreso",c:false}]}
+ ]},
+{intro:"En 1806 y 1807, los británicos intentaron ocupar Buenos Aires. Los habitantes locales organizaron milicias para defender la ciudad. Entre las fuerzas organizadas se destacó el Regimiento de Patricios, dirigido por Cornelio Saavedra. Las invasiones demostraron que los habitantes del Río de la Plata podían organizarse y defender el territorio por sus propios medios.",
+ questions:[
+  {text:"¿En qué años ocurrieron las Invasiones Inglesas?",opts:[
+    {t:"1801 y 1802",c:false},{t:"1806 y 1807",c:true},{t:"1810 y 1811",c:false},{t:"1815 y 1816",c:false}]},
+  {text:"¿Qué regimiento se destacó durante la defensa de Buenos Aires?",opts:[
+    {t:"Regimiento de Granaderos",c:false},{t:"Ejército de los Andes",c:false},
+    {t:"Regimiento de Patricios",c:true},{t:"Ejército del Norte",c:false}]}
+ ]},
+{intro:"En 1810, la crisis de la monarquía española provocó importantes discusiones políticas en el Río de la Plata. Entre el 18 y el 25 de mayo se desarrolló la Semana de Mayo. El 22 de mayo se realizó un Cabildo Abierto para discutir si el virrey Baltasar Hidalgo de Cisneros debía continuar gobernando. Finalmente, el 25 de mayo se formó la Primera Junta, con Cornelio Saavedra como presidente.",
+ questions:[
+  {text:"¿Qué ocurrió el 25 de mayo de 1810?",opts:[
+    {t:"Se declaró la independencia",c:false},{t:"Se creó el Congreso de Tucumán",c:false},
+    {t:"Se formó la Primera Junta",c:true},{t:"Se sancionó una Constitución",c:false}]},
+  {text:"¿Quién fue presidente de la Primera Junta?",opts:[
+    {t:"Mariano Moreno",c:false},{t:"Manuel Belgrano",c:false},
+    {t:"Juan José Paso",c:false},{t:"Cornelio Saavedra",c:true}]}
+ ]},
+{intro:"Después de la Revolución de Mayo comenzó una etapa de conflictos militares contra las fuerzas realistas, que defendían la autoridad de la monarquía española. Manuel Belgrano tuvo un papel importante en esta guerra. El 24 de septiembre de 1812, las fuerzas dirigidas por Belgrano derrotaron a los realistas en la Batalla de Tucumán. El 20 de febrero de 1813 volvieron a vencerlos en la Batalla de Salta.",
+ questions:[
+  {text:"¿Quién dirigió las fuerzas revolucionarias en las batallas de Tucumán y Salta?",opts:[
+    {t:"José de San Martín",c:false},{t:"Martín Miguel de Güemes",c:false},
+    {t:"Manuel Belgrano",c:true},{t:"Narciso Laprida",c:false}]},
+  {text:"¿En qué batalla Belgrano derrotó a los realistas el 20 de febrero de 1813?",opts:[
+    {t:"Batalla de Tucumán",c:false},{t:"Batalla de Sipe-Sipe",c:false},
+    {t:"Batalla de Salta",c:true},{t:"Batalla de Ayohuma",c:false}]}
+ ]},
+{intro:"Las derrotas revolucionarias en el Alto Perú hicieron necesario buscar nuevas estrategias. Martín Miguel de Güemes y sus fuerzas defendieron la frontera norte frente a los avances realistas. Mientras tanto, José de San Martín consideró que avanzar directamente por el Alto Perú era demasiado difícil. Por eso desarrolló una estrategia continental: cruzar los Andes desde Mendoza, liberar Chile y luego avanzar por mar hacia Perú.",
+ questions:[
+  {text:"¿Qué zona defendió principalmente Martín Miguel de Güemes frente a los realistas?",opts:[
+    {t:"Buenos Aires",c:false},{t:"La frontera norte",c:true},
+    {t:"La Patagonia",c:false},{t:"La costa de Buenos Aires",c:false}]},
+  {text:"¿Cuál era la estrategia de San Martín?",opts:[
+    {t:"Atacar España desde Buenos Aires",c:false},{t:"Avanzar directamente por el Alto Perú",c:false},
+    {t:"Cruzar los Andes, liberar Chile y avanzar hacia Perú",c:true},{t:"Abandonar la guerra contra España",c:false}]}
+ ]},
+{intro:"En 1815 se convocó un Congreso para reunir representantes de las provincias. El Congreso comenzó sus sesiones en San Miguel de Tucumán el 24 de marzo de 1816. Inicialmente participaron 33 diputados. No estuvieron representadas todas las provincias que actualmente forman Argentina: las provincias vinculadas a la Liga de los Pueblos Libres, como Santa Fe, Entre Ríos y Corrientes, no participaron.",
+ questions:[
+  {text:"¿Cuándo comenzó a sesionar el Congreso de Tucumán?",opts:[
+    {t:"25 de mayo de 1810",c:false},{t:"24 de marzo de 1816",c:true},
+    {t:"9 de julio de 1816",c:false},{t:"19 de julio de 1816",c:false}]},
+  {text:"¿Cuál de estas provincias NO participó en el Congreso de Tucumán?",opts:[
+    {t:"San Juan",c:false},{t:"Tucumán",c:false},{t:"Mendoza",c:false},{t:"Santa Fe",c:true}]}
+ ]},
+{intro:"El 9 de julio de 1816, el Congreso se encontraba reunido en la casa de Francisca Bazán de Laguna, en San Miguel de Tucumán. El presidente del Congreso era Narciso Laprida. Ese día los representantes aprobaron la declaración de independencia, estableciendo que las Provincias Unidas rompían los vínculos que las unían con los reyes de España y se constituían como una nación libre e independiente.",
+ questions:[
+  {text:"¿En qué ciudad se declaró la independencia?",opts:[
+    {t:"Buenos Aires",c:false},{t:"Mendoza",c:false},{t:"San Miguel de Tucumán",c:true},{t:"Córdoba",c:false}]},
+  {text:"¿Quién presidía el Congreso cuando se declaró la independencia?",opts:[
+    {t:"Manuel Belgrano",c:false},{t:"Juan Martín de Pueyrredón",c:false},
+    {t:"Narciso Laprida",c:true},{t:"José de San Martín",c:false}]}
+ ]},
+{intro:"El Acta de Independencia estableció que las Provincias Unidas eran independientes de los reyes de España y su metrópoli. Posteriormente se agregó la expresión “y de toda otra dominación extranjera”. El nombre utilizado en el Acta fue “Provincias Unidas en Sud-América”, no “República Argentina”. Además, la declaración no terminó inmediatamente las guerras ni resolvió definitivamente la forma de gobierno.",
+ questions:[
+  {text:"¿Qué expresión se agregó posteriormente al Acta de Independencia?",opts:[
+    {t:"“Por la libertad de América”",c:false},{t:"“Para siempre jamás”",c:false},
+    {t:"“Y de toda otra dominación extranjera”",c:true},{t:"“En nombre de la República Argentina”",c:false}]},
+  {text:"¿Cómo se denominó a la nueva nación en el Acta de Independencia?",opts:[
+    {t:"República Argentina",c:false},{t:"Confederación Argentina",c:false},
+    {t:"Estados Unidos del Río de la Plata",c:false},{t:"Provincias Unidas en Sud-América",c:true}]}
+ ]}
+];
+
+let state = {phase:'lobby', round:1, qIndex:0};
+let participants = {};
+let rounds = DEFAULT_ROUNDS;
+let editingRound = 0;
+
+function setState(newState){
+  state = newState;
+  db.ref('quizstate').set(state);
+}
+
+function saveRounds(){
+  db.ref('quizdata').set({rounds: rounds});
+}
+
+/* ===================== RESET GLOBAL SIEMPRE VISIBLE ===================== */
+document.getElementById('global-reset-btn').addEventListener('click', ()=>{
+  if(!confirm('Esto borra a todos los participantes conectados y vuelve al inicio. ¿Continuar?')) return;
+  db.ref('users').remove();
+  participants = {};
+  setState({phase:'lobby', round:1, qIndex:0});
+  const note = document.getElementById('global-reset-note');
+  note.style.display = 'inline';
+  setTimeout(()=>note.style.display='none', 1800);
+});
+
+/* ===================== TABS ===================== */
+document.getElementById('tab-live').addEventListener('click', ()=>switchTab('live'));
+document.getElementById('tab-edit').addEventListener('click', ()=>switchTab('edit'));
+document.getElementById('tab-ui').addEventListener('click', ()=>switchTab('ui'));
+function switchTab(t){
+  document.getElementById('tab-live').classList.toggle('active', t==='live');
+  document.getElementById('tab-edit').classList.toggle('active', t==='edit');
+  document.getElementById('tab-ui').classList.toggle('active', t==='ui');
+  document.getElementById('view-live').style.display = t==='live' ? 'block':'none';
+  document.getElementById('view-edit').style.display = t==='edit' ? 'block':'none';
+  document.getElementById('view-ui').style.display = t==='ui' ? 'block':'none';
+  if(t==='edit') renderRoundEditor();
+  if(t==='ui') renderUiEditor();
+}
+
+/* ===================== EDITOR DE PREGUNTAS ===================== */
+function renderRoundNav(){
+  const nav = document.getElementById('round-nav');
+  let html = '';
+  for(let i=0;i<8;i++){
+    html += `<button class="${i===editingRound?'active':''}" data-i="${i}">${i+1}</button>`;
+  }
+  nav.innerHTML = html;
+  nav.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{ editingRound = parseInt(b.dataset.i,10); renderRoundEditor(); });
+  });
+}
+
+function renderRoundEditor(){
+  renderRoundNav();
+  const r = rounds[editingRound];
+  const ed = document.getElementById('round-editor');
+  let html = `
+    <label class="lbl">Texto de introducción de la ronda ${editingRound+1}</label>
+    <textarea id="edit-intro">${r.intro}</textarea>
+  `;
+  r.questions.forEach((q, qi)=>{
+    html += `<label class="lbl">Pregunta ${qi+1}</label><input type="text" id="edit-q${qi}-text" value="${q.text.replace(/"/g,'&quot;')}">`;
+    q.opts.forEach((o, oi)=>{
+      html += `
+        <div class="opt-edit">
+          <input type="radio" name="correct-${qi}" id="correct-${qi}-${oi}" ${o.c?'checked':''}>
+          <input type="text" id="edit-q${qi}-opt${oi}" value="${o.t.replace(/"/g,'&quot;')}">
+          <span class="radio-lbl">correcta</span>
+        </div>`;
+    });
+  });
+  ed.innerHTML = html;
+}
+
+document.getElementById('save-round').addEventListener('click', ()=>{
+  const r = rounds[editingRound];
+  r.intro = document.getElementById('edit-intro').value.trim();
+  r.questions.forEach((q, qi)=>{
+    q.text = document.getElementById('edit-q'+qi+'-text').value.trim();
+    q.opts.forEach((o, oi)=>{
+      o.t = document.getElementById('edit-q'+qi+'-opt'+oi).value.trim();
+      o.c = document.getElementById('correct-'+qi+'-'+oi).checked;
+    });
+  });
+  saveRounds();
+  const note = document.getElementById('saved-note');
+  note.style.display = 'inline';
+  setTimeout(()=>note.style.display='none', 1800);
+});
+
+/* ===================== TEXTOS GENERALES ===================== */
+const DEFAULT_UI = {
+  heroEyebrow: "HISTORIA ARGENTINA · 1810–1816",
+  heroLine1: "¿CUÁNTO SABÉS",
+  heroLine2: "DE LA INDEPENDENCIA?",
+  heroSub: "Poné a prueba tus conocimientos sobre el proceso que llevó a la declaración de la Independencia Argentina.",
+  lobbyTag: "QUIZ HISTÓRICO",
+  lobbyText: "8 rondas · 16 preguntas · 4 opciones por pregunta. Solo una respuesta es correcta. ¿Estás listo para poner a prueba cuánto sabés sobre la Independencia?",
+  joinBtn: "COMENZAR QUIZ",
+  waitingStart: "Prepará tus conocimientos. El quiz está por comenzar...",
+  footerText: "Quiz sobre la Independencia Argentina · 1810–1816",
+  finalExtra: "La Independencia fue el resultado de un largo proceso político, militar y social. ¿Cuánto aprendiste?"
+};
+let uiText = DEFAULT_UI;
+db.ref('uitext').on('value', (snap)=>{
+  const v = snap.val();
+  uiText = v ? Object.assign({}, DEFAULT_UI, v) : DEFAULT_UI;
+  if(document.getElementById('view-ui').style.display !== 'none') renderUiEditor();
+});
+
+function renderUiEditor(){
+  const el = document.getElementById('ui-editor');
+  const fields = [
+    ['heroEyebrow','Texto pequeño arriba del título'],
+    ['heroLine1','Título — primera línea'],
+    ['heroLine2','Título — segunda línea (en cursiva/dorado)'],
+    ['heroSub','Subtítulo debajo del título'],
+    ['lobbyTag','Etiqueta de la pantalla de inicio'],
+    ['lobbyText','Texto explicativo antes de "Iniciar quiz"'],
+    ['joinBtn','Texto del botón para unirse'],
+    ['waitingStart','Mensaje de espera antes de que arranque el quiz'],
+    ['footerText','Texto del pie de página'],
+    ['finalExtra','Texto extra al final del resultado (opcional, antes del crédito)']
+  ];
+  let html = '<h2>Textos generales de la página</h2>';
+  fields.forEach(([key,label])=>{
+    const val = (uiText[key] || '').replace(/</g,'&lt;');
+    html += '<label class="lbl">'+label+'</label>';
+    if(key === 'lobbyText' || key === 'heroSub' || key === 'finalExtra'){
+      html += '<textarea id="ui-'+key+'">'+val+'</textarea>';
+    } else {
+      html += '<input type="text" id="ui-'+key+'" value="'+val+'">';
+    }
+  });
+  html += '<button class="btn" id="save-ui">Guardar textos generales</button><span class="saved-note" id="saved-ui-note" style="display:none;">Guardado ✓</span>';
+  el.innerHTML = html;
+  document.getElementById('save-ui').addEventListener('click', ()=>{
+    const updated = {};
+    fields.forEach(([key])=>{ updated[key] = document.getElementById('ui-'+key).value.trim(); });
+    db.ref('uitext').set(updated);
+    const note = document.getElementById('saved-ui-note');
+    note.style.display = 'inline';
+    setTimeout(()=>note.style.display='none', 1800);
+  });
+}
+
+/* ===================== CONTROL EN VIVO ===================== */
+function phaseLabel(p){
+  return {'lobby':'ESPERANDO INICIO','intro':'INTRODUCCIÓN RONDA '+state.round,'question':'RONDA '+state.round+' · PREGUNTA '+(state.qIndex+1),'finished':'QUIZ FINALIZADO'}[p] || p;
+}
+
+function renderControlPanel(){
+  const el = document.getElementById('control-panel');
+  const total = Object.keys(participants).length;
+
+  if(state.phase === 'lobby'){
+    el.innerHTML = `
+      <h2>Listo para empezar</h2>
+      <p style="color:var(--text-dim); font-size:14px;">Los textos y preguntas se editan en las otras pestañas. Cuando estés listo, arrancá la ronda 1.</p>
+      <button class="btn" id="start-btn">Iniciar Quiz (Ronda 1)</button>
+      <p class="link-note">${total} participante(s) conectado(s) esperando.</p>
+    `;
+    document.getElementById('start-btn').addEventListener('click', ()=>{
+      setState({phase:'intro', round:1, qIndex:0});
+    });
+  } else if(state.phase === 'intro'){
+    const r = rounds[state.round-1];
+    el.innerHTML = `
+      <h2>Ronda ${state.round} de 8 — Introducción activa</h2>
+      <p style="color:var(--text-dim); font-size:14px; line-height:1.6;">${r.intro}</p>
+      <button class="btn" id="start-q">Iniciar Pregunta 1</button>
+    `;
+    document.getElementById('start-q').addEventListener('click', ()=>{
+      setState(Object.assign({}, state, {phase:'question', qIndex:0}));
+    });
+  } else if(state.phase === 'question'){
+    renderQuestionControl();
+  } else if(state.phase === 'finished'){
+    el.innerHTML = `
+      <h2>Quiz finalizado</h2>
+      <p style="color:var(--text-dim); font-size:14px;">Todos los participantes ya pueden ver su resultado final.</p>
+      <button class="btn btn-danger" id="reset-btn">Reiniciar todo</button>
+    `;
+    document.getElementById('reset-btn').addEventListener('click', ()=>{
+      if(!confirm('Esto borra participantes y respuestas. ¿Continuar?')) return;
+      db.ref('users').remove();
+      participants = {};
+      setState({phase:'lobby', round:1, qIndex:0});
+    });
+  }
+}
+
+function renderQuestionControl(){
+  const el = document.getElementById('control-panel');
+  const isLastQ = state.qIndex === 1;
+  const isLastRound = state.round === 8;
+  let nextLabel = 'Siguiente pregunta';
+  if(isLastQ && isLastRound) nextLabel = 'Finalizar Quiz';
+  else if(isLastQ) nextLabel = 'Ir a Ronda ' + (state.round+1);
+
+  el.innerHTML = `
+    <h2>Ronda ${state.round} de 8 — Pregunta ${state.qIndex+1} de 2</h2>
+    <div class="stat-row">
+      <div class="stat"><span class="num" id="answered-count">0</span><span class="lbl2">Respondieron</span></div>
+      <div class="stat"><span class="num">${Object.keys(participants).length}</span><span class="lbl2">Conectados</span></div>
+    </div>
+    <button class="btn" id="next-q">${nextLabel}</button>
+  `;
+  document.getElementById('next-q').addEventListener('click', ()=>{
+    if(isLastQ && isLastRound){
+      setState(Object.assign({}, state, {phase:'finished'}));
+    } else if(isLastQ){
+      setState({phase:'intro', round: state.round+1, qIndex:0});
+    } else {
+      setState(Object.assign({}, state, {qIndex: state.qIndex + 1}));
+    }
+  });
+  renderQuestionPreview();
+}
+
+function renderQuestionPreview(){
+  const panel = document.getElementById('question-panel');
+  panel.style.display = 'block';
+  const item = rounds[state.round-1].questions[state.qIndex];
+  let answeredCount = 0;
+  const counts = item.opts.map(()=>0);
+
+  Object.values(participants).forEach(p=>{
+    const a = (p.answers||[]).find(x=>x.round===state.round && x.qIndex===state.qIndex);
+    if(a){
+      answeredCount++;
+      const optIdx = item.opts.findIndex(o=>o.t === a.sel);
+      if(optIdx >= 0) counts[optIdx]++;
+    }
+  });
+  const cEl = document.getElementById('answered-count');
+  if(cEl) cEl.textContent = answeredCount;
+
+  let rows = '';
+  item.opts.forEach((o,i)=>{
+    rows += '<div class="opt-row '+(o.c?'correct':'')+'"><span>'+o.t+'</span><span class="opt-count">'+counts[i]+'</span></div>';
+  });
+  panel.innerHTML = '<h2>Vista previa — respuestas en vivo</h2><p class="q-preview">'+item.text+'</p>'+rows;
+}
+
+/* ===================== PARTICIPANTES + EXPULSAR ===================== */
+function kickUser(id){
+  if(!confirm('¿Expulsar a este participante? Va a perder su progreso y no podrá seguir respondiendo.')) return;
+  db.ref('users/'+id).remove();
+}
+
+function renderParticipants(){
+  const el = document.getElementById('participants-panel');
+  const ids = Object.keys(participants);
+  let rows = '';
+  if(ids.length === 0){
+    rows = '<p class="empty">Nadie se unió todavía. Compartí el enlace del quiz.</p>';
+  } else {
+    ids.forEach(id=>{
+      const p = participants[id];
+      const done = (p.answers||[]).length;
+      rows += '<div class="participant">'
+        + '<div class="pinfo"><span class="pname">'+(p.device || 'Dispositivo desconocido')+'</span></div>'
+        + '<span class="badge">'+done+'/16</span>'
+        + '<button class="kick-btn" data-id="'+id+'">Expulsar</button>'
+        + '</div>';
+    });
+  }
+  el.innerHTML = '<h2>Participantes ('+ids.length+')</h2>'+rows;
+  el.querySelectorAll('.kick-btn').forEach(b=>{
+    b.addEventListener('click', ()=>kickUser(b.dataset.id));
+  });
+}
+
+function render(){
+  document.getElementById('phase-pill').textContent = phaseLabel(state.phase);
+  if(state.phase !== 'question'){
+    document.getElementById('question-panel').style.display = 'none';
+  }
+  renderControlPanel();
+  renderParticipants();
+}
+
+/* ===================== REALTIME LISTENERS ===================== */
+db.ref('quizdata').once('value', (snap)=>{
+  const val = snap.val();
+  if(val && val.rounds && val.rounds.length === 8){
+    rounds = val.rounds;
+  } else {
+    saveRounds();
+  }
+  db.ref('quizdata').on('value', (snap2)=>{
+    const v2 = snap2.val();
+    if(v2 && v2.rounds && v2.rounds.length === 8) rounds = v2.rounds;
+    if(document.getElementById('view-edit').style.display !== 'none') renderRoundEditor();
+  });
+});
+
+db.ref('quizstate').on('value', (snap)=>{
+  const val = snap.val();
+  if(val){ state = val; } else { db.ref('quizstate').set(state); }
+  render();
+});
+
+db.ref('users').on('value', (snap)=>{
+  participants = snap.val() || {};
+  render();
+});
+</script>
+</body>
+</html>
