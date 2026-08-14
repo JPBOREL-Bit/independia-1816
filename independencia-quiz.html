@@ -227,21 +227,28 @@ function legacyDetect(){
 }
 
 async function detectDevice(){
+  let result = null;
   try{
     if(navigator.userAgentData && navigator.userAgentData.getHighEntropyValues){
       const hints = await navigator.userAgentData.getHighEntropyValues(['model','platform','platformVersion']);
       const model = (hints.model || '').trim();
       const platform = (hints.platform || '').trim();
       if(model && model.length > 1){
-        return model + (platform ? ' · '+platform : '');
-      }
-      if(platform){
+        result = model + (platform ? ' · '+platform : '');
+      } else if(platform){
         const legacyParts = legacyDetect().split(' · ');
-        return legacyParts[1] ? platform + ' · ' + legacyParts[1] : platform;
+        result = legacyParts[1] ? platform + ' · ' + legacyParts[1] : platform;
       }
     }
   }catch(e){ /* sigue al fallback */ }
-  return legacyDetect();
+  if(!result){ result = legacyDetect(); }
+  // agrega resolución de pantalla para poder distinguir dispositivos aunque el modelo no esté disponible
+  try{
+    const w = window.screen && window.screen.width;
+    const h = window.screen && window.screen.height;
+    if(w && h) result += ' (' + w + '×' + h + ')';
+  }catch(e){}
+  return result;
 }
 
 /* ===================== IDENTIDAD PERSISTENTE DEL DISPOSITIVO ===================== */
@@ -413,11 +420,18 @@ function watchOwnRecord(){
 }
 
 /* ===================== RESTAURAR SESIÓN SI YA HABÍA ENTRADO ===================== */
-db.ref('users/'+userId).once('value').then((snap)=>{
+db.ref('users/'+userId).once('value').then(async (snap)=>{
   const existing = snap.val();
   if(existing){
     record = existing;
+    if(!record.answers) record.answers = [];
     joined = true;
+    // re-detecta el dispositivo por si antes había quedado guardado un valor genérico
+    const fresh = await detectDevice();
+    if(fresh && fresh !== record.device){
+      record.device = fresh;
+      saveRecord();
+    }
     watchOwnRecord();
   }
 });
