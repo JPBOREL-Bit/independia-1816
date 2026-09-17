@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -137,7 +137,7 @@
 
   <div id="view-edit" style="display:none;">
     <div class="panel">
-      <h2>Editar contenido — 8 rondas · 2 preguntas cada una</h2>
+      <h2>Editar contenido — 8 rondas · 1 pregunta cada una</h2>
       <div class="round-nav" id="round-nav"></div>
       <div id="round-editor"></div>
       <button class="btn" id="save-round">Guardar ronda</button>
@@ -155,13 +155,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyBJ5QyiT9RyxKq2wtxP-WUnSo0US8bR7To",
-  authDomain: "independencia-1816.firebaseapp.com",
-  databaseURL: "https://independencia-1816-default-rtdb.firebaseio.com",
-  projectId: "independencia-1816",
-  storageBucket: "independencia-1816.firebasestorage.app",
-  messagingSenderId: "158213747062",
-  appId: "1:158213747062:web:3274f98cb5729530b68a57"
+  apiKey: "AIzaSyCl6xdGH1KfbFcZWPQJnkH-ZVqb5T2nmwY",
+  authDomain: "nehemias-7afe1.firebaseapp.com",
+  databaseURL: "https://nehemias-7afe1-default-rtdb.firebaseio.com",
+  projectId: "nehemias-7afe1",
+  storageBucket: "nehemias-7afe1.firebasestorage.app",
+  messagingSenderId: "379746148317",
+  appId: "1:379746148317:web:b1035476907f878d38a034"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -231,7 +231,7 @@ function saveRounds(){
   db.ref('quizdata').set({rounds: rounds});
 }
 
-/* ===================== RESET GLOBAL SIEMPRE VISIBLE ===================== */
+/* ===================== RESET GLOBAL ===================== */
 document.getElementById('global-reset-btn').addEventListener('click', ()=>{
   if(!confirm('Esto borra a todos los participantes conectados y vuelve al inicio. ¿Continuar?')) return;
   db.ref('users').remove();
@@ -344,7 +344,7 @@ function renderUiEditor(){
   ];
   let html = '<h2>Textos generales de la página</h2>';
   fields.forEach(([key,label])=>{
-    const val = (uiText[key] || '').replace(/</g,'&lt;');
+    const val = (uiText[key] || '').replace(/</g,'&lt;').replace(/"/g,'&quot;');
     html += '<label class="lbl">'+label+'</label>';
     if(key === 'lobbyText' || key === 'heroSub' || key === 'finalExtra'){
       html += '<textarea id="ui-'+key+'">'+val+'</textarea>';
