@@ -100,13 +100,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyBJ5QyiT9RyxKq2wtxP-WUnSo0US8bR7To",
-  authDomain: "independencia-1816.firebaseapp.com",
-  databaseURL: "https://independencia-1816-default-rtdb.firebaseio.com",
-  projectId: "independencia-1816",
-  storageBucket: "independencia-1816.firebasestorage.app",
-  messagingSenderId: "158213747062",
-  appId: "1:158213747062:web:3274f98cb5729530b68a57"
+  apiKey: "AIzaSyCl6xdGH1KfbFcZWPQJnkH-ZVqb5T2nmwY",
+  authDomain: "nehemias-7afe1.firebaseapp.com",
+  databaseURL: "https://nehemias-7afe1-default-rtdb.firebaseio.com",
+  projectId: "nehemias-7afe1",
+  storageBucket: "nehemias-7afe1.firebasestorage.app",
+  messagingSenderId: "379746148317",
+  appId: "1:379746148317:web:b1035476907f878d38a034"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -219,7 +219,6 @@ async function detectDevice(){
     }
   }catch(e){ /* sigue al fallback */ }
   if(!result){ result = legacyDetect(); }
-  // agrega resolución de pantalla para poder distinguir dispositivos aunque el modelo no esté disponible
   try{
     const w = window.screen && window.screen.width;
     const h = window.screen && window.screen.height;
@@ -385,7 +384,7 @@ function renderExpelled(){
   `;
 }
 
-/* ===================== VIGILAR EL PROPIO REGISTRO (para detectar expulsión) ===================== */
+/* ===================== VIGILAR EL PROPIO REGISTRO ===================== */
 function watchOwnRecord(){
   db.ref('users/'+userId).on('value', (snap)=>{
     if(!joined) return;
@@ -396,14 +395,13 @@ function watchOwnRecord(){
   });
 }
 
-/* ===================== RESTAURAR SESIÓN SI YA HABÍA ENTRADO ===================== */
+/* ===================== RESTAURAR SESIÓN ===================== */
 db.ref('users/'+userId).once('value').then(async (snap)=>{
   const existing = snap.val();
   if(existing){
     record = existing;
     if(!record.answers) record.answers = [];
     joined = true;
-    // re-detecta el dispositivo por si antes había quedado guardado un valor genérico
     const fresh = await detectDevice();
     if(fresh && fresh !== record.device){
       record.device = fresh;
@@ -411,7 +409,7 @@ db.ref('users/'+userId).once('value').then(async (snap)=>{
     }
     watchOwnRecord();
   }
-});
+}).catch(e=>console.error(e));
 
 /* ===================== CONTENIDO ===================== */
 db.ref('quizdata').on('value', (snap)=>{
